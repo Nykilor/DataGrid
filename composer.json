@@ -1,0 +1,10 @@
+{
+    "name": "marmolada/data-grid",
+    "description": "Table printing package made for recruitment process.",
+    "type": "library",
+    "license": "MIT",
+    "require": {},
+    "autoload": {
+        "psr-4": {"DataGrid\\":  "src/"}
+    }
+}
