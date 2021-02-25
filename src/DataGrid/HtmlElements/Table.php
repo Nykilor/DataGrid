@@ -4,6 +4,8 @@
 namespace DataGrid\DataGrid\HtmlElements;
 
 
+use DataGrid\State\StateInterface;
+
 class Table
 {
     protected $string = "";
@@ -49,6 +51,20 @@ class Table
     public function endCell()
     {
         $this->string .= "</td>";
+    }
+
+    public function createTableHeadingCell($value, $orderBy, StateInterface $state, $class = [])
+    {
+        $globalGetCopy = $_GET;
+        $globalGetCopy["orderBy"] = $orderBy;
+
+        if(strpos($state->getOrderBy(), $value) !== false) {
+            $orderingSign = ($state->isOrderAsc()) ? "&#8593;" : "&#8595;";
+        } else {
+            $orderingSign = "";
+        }
+
+        $this->string .= '<th><a href="?'.http_build_query($globalGetCopy).'" target="_self">'.$value.' '.$orderingSign.'</a></th>';
     }
 
     public function startTableHeadingCell($class = [])

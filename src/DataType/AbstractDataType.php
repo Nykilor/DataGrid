@@ -14,6 +14,7 @@ abstract class AbstractDataType implements DataTypeInterface
     {
         $input = htmlspecialchars($value);
         $input = strip_tags($value);
+        $input = str_replace(" ", "&nbsp;", $input);
 
         return $input;
     }

@@ -11,29 +11,42 @@ use DataGrid\State\StateInterface;
 class HtmlDataGrid extends AbstractDataGrid
 {
 
+    private $errors = [];
+
     public function render(array $rows, StateInterface $state)
     {
         //var_dump($this->config, $rows, $state);
         $table = new HtmlElements\Table();
+        $pagination = new HtmlElements\Pagination($state, count($rows));
         $configColumns = $this->config->getColumns();
 
         $table->startTable();
 
-        $this->createHeader($table, $configColumns);
+        $this->createHeader($table, $configColumns, $state);
         $this->createBody($table, $configColumns, $rows, $state);
 
         $table->endTable();
 
-        return $table->getTable();
+        return $table->getTable().$pagination->getPagination();
     }
 
-    private function createHeader(Table $table, array $configColumns): void
+    private function createHeader(Table $table, array $configColumns, StateInterface $state): void
     {
         $table->startRow();
+        $orderBy = explode(",", $state->getOrderBy());
         foreach ($configColumns as $columnObject) {
-            $table->startTableHeadingCell();
-            $table->insertData($columnObject->getLabel());
-            $table->endTableHeadingCell();
+            $tableOrderingClick = $columnObject->getLabel();
+            if(!empty($state->getOrderBy()) && $orderBy[0] === $columnObject->getLabel()) {
+                if($state->isOrderAsc()) {
+                    $tableOrderingClick .= ","."desc";
+                } else {
+                    $tableOrderingClick = "";
+                }
+            } else {
+                $tableOrderingClick .= ","."asc";
+            }
+
+            $table->createTableHeadingCell($columnObject->getLabel(), $tableOrderingClick, $state);
         }
         $table->endRow();
     }
@@ -42,6 +55,7 @@ class HtmlDataGrid extends AbstractDataGrid
     {
         $printRowsTill = $state->getCurrentPage() * $state->getRowsPerPage();
         $printRowsFrom = (int) floor($printRowsTill - $state->getRowsPerPage());
+        $rows = $this->sortRows($rows, $state);
 
         for ($currentRow = $printRowsFrom; $currentRow < count($rows); $currentRow++) {
             if($currentRow === $printRowsTill) {
@@ -58,12 +72,33 @@ class HtmlDataGrid extends AbstractDataGrid
         }
     }
 
-    private function sortRows(array $rows, StateInterface $state): void
+    private function sortRows(array $rows, StateInterface $state): array
     {
-        $sortBy = $state->getOrderBy();
+        if(empty($state->getOrderBy())) {
+            return $rows;
+        }
 
-        usort($rows, function ($a, $b) {
-            return $b['name'] <=> $a['name'];
-        });
+        $sortBy = explode(",", $state->getOrderBy());
+
+        //Niezbyt eleganckie może do poprawy.
+        if($sortBy[1] === "desc") {
+            usort($rows, function($a, $b) use ($sortBy) {
+                if(array_key_exists($sortBy[0], $b)) {
+                    return $b[$sortBy[0]] <=> $a[$sortBy[0]];
+                } else {
+                    return false;
+                }
+            });
+        } elseif($sortBy[1] === "asc") {
+            usort($rows, function($a, $b) use ($sortBy) {
+                if(array_key_exists($sortBy[0], $b)) {
+                    return $a[$sortBy[0]] <=> $b[$sortBy[0]];
+                } else {
+                    return false;
+                }
+            });
+        }
+
+        return $rows;
     }
 }

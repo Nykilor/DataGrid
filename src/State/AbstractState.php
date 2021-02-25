@@ -60,7 +60,7 @@ abstract class AbstractState implements StateInterface
         if(!is_null($this->orderBy)) {
             $orderBy = explode(",", $this->orderBy);
 
-            if(is_array($orderBy) && count($orderBy) > 0 && $orderBy[1] === $ordering) {
+            if(is_array($orderBy) && count($orderBy) > 1 && $orderBy[1] === $ordering) {
                 return true;
             }
         }
