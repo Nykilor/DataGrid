@@ -8,11 +8,16 @@ class LinkTypeColumn extends AbstractColumn
 {
     protected $options = [
         "element" => "a",
-        "bootstrap_class" => ""
+        "class" => ""
     ];
 
-
-    public function setElement(string $element): void
+    /**
+     * Set if the link should be shown as: "a" or "button"
+     *
+     * @param string $element "a" or "button"
+     * @return $this
+     */
+    public function setElement(string $element)
     {
         $allowedElements = ["a", "button"];
         if(in_array($element, $allowedElements)) {
@@ -20,10 +25,19 @@ class LinkTypeColumn extends AbstractColumn
         } else {
             throw new \InvalidArgumentException("There's no allowed element like: ".$element." allowed elements are: ".implode(", ", $allowedElements));
         }
+
+        return $this;
     }
 
-    public function setBootstrapClass(string $class): void
+    /**
+     * Assing a class to the element
+     * @param string $class
+     * @return $this
+     */
+    public function setClass(string $class)
     {
-        $this->options["bootstrap_class"] = $class;
+        $this->options["class"] = $class;
+
+        return $this;
     }
 }

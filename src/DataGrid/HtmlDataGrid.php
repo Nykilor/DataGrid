@@ -11,7 +11,7 @@ use DataGrid\State\StateInterface;
 class HtmlDataGrid extends AbstractDataGrid
 {
 
-    private $errors = [];
+    private $colCount = 0;
 
     public function render(array $rows, StateInterface $state)
     {
@@ -20,7 +20,7 @@ class HtmlDataGrid extends AbstractDataGrid
         $pagination = new HtmlElements\Pagination($state, count($rows));
         $configColumns = $this->config->getColumns();
 
-        $table->startTable();
+        $table->startTable(["table", "table-bordered"]);
 
         $this->createHeader($table, $configColumns, $state);
         $this->createBody($table, $configColumns, $rows, $state);
@@ -35,6 +35,7 @@ class HtmlDataGrid extends AbstractDataGrid
         $table->startRow();
         $orderBy = explode(",", $state->getOrderBy());
         foreach ($configColumns as $columnObject) {
+            $this->colCount++;
             $tableOrderingClick = $columnObject->getLabel();
             if(!empty($state->getOrderBy()) && $orderBy[0] === $columnObject->getLabel()) {
                 if($state->isOrderAsc()) {
@@ -62,12 +63,37 @@ class HtmlDataGrid extends AbstractDataGrid
                 break;
             }
             $table->startRow();
+
+            $cellValues = [];
+
             foreach ($configColumns as $columnKey => $configColumnsObject) {
                 if (array_key_exists($columnKey, $rows[$currentRow])) {
                     $cellDataType = $configColumnsObject->getDataType();
-                    $table->createCell($cellDataType->format($rows[$currentRow][$columnKey], $configColumnsObject->getOptions()));
+                    $rowValue = $rows[$currentRow][$columnKey];
+
+                    if(is_null($rowValue)) {
+                        $cellValue = "&#9888;";
+                    } else {
+                        $cellValue = $cellDataType->format($rowValue, $configColumnsObject->getOptions());
+                    }
+
+
+                    $cellValues[] = $cellValue;
+                } else {
+                    $cellValues[] = "";
                 }
             }
+
+            if (!empty($cellValues) && count(array_unique($cellValues)) === 1 && end($cellValues) === '&#9888;') {
+                $table->createErrorCell("&#9888; Błąd wiersza - w tym wierszu znajdują się błędne dane", $this->colCount, ['text-danger']);
+            } elseif(!empty($cellValues) && count(array_unique($cellValues)) === 1 && end($cellValues) === '') {
+                $table->createErrorCell("&#9888; Błąd wiersza - w tym wierszu znajdują się błędne dane", $this->colCount, ['text-danger']);
+            } else {
+                foreach ($cellValues as $cellValue) {
+                    $table->createCell($cellValue);
+                }
+            }
+
             $table->endRow();
         }
     }
@@ -83,7 +109,7 @@ class HtmlDataGrid extends AbstractDataGrid
         //Niezbyt eleganckie może do poprawy.
         if($sortBy[1] === "desc") {
             usort($rows, function($a, $b) use ($sortBy) {
-                if(array_key_exists($sortBy[0], $b)) {
+                if(array_key_exists($sortBy[0], $b) && array_key_exists($sortBy[0], $a)) {
                     return $b[$sortBy[0]] <=> $a[$sortBy[0]];
                 } else {
                     return false;
@@ -91,7 +117,7 @@ class HtmlDataGrid extends AbstractDataGrid
             });
         } elseif($sortBy[1] === "asc") {
             usort($rows, function($a, $b) use ($sortBy) {
-                if(array_key_exists($sortBy[0], $b)) {
+                if(array_key_exists($sortBy[0], $b) && array_key_exists($sortBy[0], $a)) {
                     return $a[$sortBy[0]] <=> $b[$sortBy[0]];
                 } else {
                     return false;

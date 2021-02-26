@@ -8,7 +8,7 @@ use DataGrid\State\StateInterface;
 
 class Pagination
 {
-    protected $string = '<nav aria-label="Pagination"><ul class="pagination">';
+    protected $string = '<nav aria-label="Pagination"><ul class="pagination justify-content-center">';
     protected $currentPage;
     protected $resultsPerPage;
     protected $maxRows;
@@ -19,7 +19,7 @@ class Pagination
         $this->currentPage = $state->getCurrentPage();
         $this->resultsPerPage = $state->getRowsPerPage();
         $this->maxRows = $maxRows;
-        $this->maxPages = round($this->maxRows / $this->resultsPerPage);
+        $this->maxPages = ceil($this->maxRows / $this->resultsPerPage);
         $this->createPagination();
     }
 

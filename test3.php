@@ -30,7 +30,7 @@
 <?php
 require __DIR__ . '/vendor/autoload.php';
 try {
-    $rows = json_decode(file_get_contents("data.json"), true);
+    $rows = json_decode(file_get_contents("data4.json"), true);
     $state = new \DataGrid\State\HttpState();
     $dataGrid = new \DataGrid\DataGrid\HtmlDataGrid();
     $config = new \DataGrid\Config\DefaultConfig();
@@ -50,12 +50,7 @@ try {
 ?>
     </div>
 </div>
-
-<ul>
-    <li><a href="test1.php">Click for Test1 - Additional fields tests</a></li>
-    <li><a href="test2.php">Click for Test2 - Cell/row errors</a></li>
-    <li><a href="test3.php">Click for Test3 - Full error</a></li>
-</ul>
+<a href="data4.json">Click for the test data</a>
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>

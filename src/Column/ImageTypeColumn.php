@@ -12,13 +12,17 @@ class ImageTypeColumn extends AbstractColumn
     ];
 
 
-    public function setWidth(int $width): void
+    public function setWidth(int $width)
     {
         $this->options["width"] = $width;
+
+        return $this;
     }
 
-    public function setHeight(int $height): void
+    public function setHeight(int $height)
     {
         $this->options["height"] = $height;
+
+        return $this;
     }
 }

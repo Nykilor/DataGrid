@@ -14,9 +14,11 @@ class DateTypeColumn extends AbstractColumn
     /**
      * @param string $format The display format for the date and time  based on https://www.php.net/manual/en/datetime.format.php
      */
-    public function setFormat(string $format): void
+    public function setFormat(string $format)
     {
         $this->options["format"] = $format;
+
+        return $this;
     }
 
 }

@@ -45,12 +45,17 @@ class Table
 
     public function startCell($class = [])
     {
-        $this->string .= $this->addClasses("<td>", $class);;
+        $this->string .= $this->addClasses("<td>", $class);
     }
 
     public function endCell()
     {
         $this->string .= "</td>";
+    }
+
+    public function createErrorCell($message, $width, $class = [])
+    {
+        $this->string .= $this->addClasses('<td colspan="'.$width.'">'.$message.'</td>', $class);
     }
 
     public function createTableHeadingCell($value, $orderBy, StateInterface $state, $class = [])
@@ -64,7 +69,7 @@ class Table
             $orderingSign = "";
         }
 
-        $this->string .= '<th><a href="?'.http_build_query($globalGetCopy).'" target="_self">'.$value.' '.$orderingSign.'</a></th>';
+        $this->string .= '<th><a href="?'.http_build_query($globalGetCopy).'" target="_self" data-label="'.$value.'">'.$value.' '.$orderingSign.'</a></th>';
     }
 
     public function startTableHeadingCell($class = [])
@@ -82,12 +87,20 @@ class Table
         $this->string .= $value;
     }
 
+    /**
+     * Adds a class to element. Works only with methods that start the element.
+     * @param $string The element
+     * @param array $class Classes to add
+     * @return string
+     */
     private function addClasses($string, $class = [])
     {
         if(empty($class)) {
             return $string;
         } else {
-            return mb_substr($string, 0, -1).'class="'.implode(" ", $class).'">';
+            $str_to_insert = ' class="'.implode(" ", $class).'"';
+            $pos = strpos($string, ">");
+            return substr_replace($string, $str_to_insert, $pos, 0);
         }
     }
 }

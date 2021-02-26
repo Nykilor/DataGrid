@@ -13,7 +13,7 @@ class LinkType extends AbstractDataType
         if($option["element"] === "a") {
             return '<a href="'.$value.'" target="_blank" class="'.$option["class"].'">'.$value.'</a>';
         } else {
-            return '<a href="'.$value.'" <button class="'.$option["class"].'">'.$value.'</button></a>';
+            return '<a href="'.$value.'" <button class="'.$option["class"].'">Link</button></a>';
         }
     }
 }
